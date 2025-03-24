@@ -32,11 +32,18 @@ const User = sequelize.define('User', {
     phone_number: {
         type: DataTypes.STRING,
     },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     register_date: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
+}, {
+    tableName: 'users', // 👈 Aquí defines el nombre real de la tabla
+    timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
 });
 
 module.exports = User;

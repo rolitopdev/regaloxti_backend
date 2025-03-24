@@ -27,6 +27,9 @@ const Subscription = sequelize.define('Subscription', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+}, {
+    tableName: 'subscriptions',
+    timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
 });
 
 module.exports = Subscription;

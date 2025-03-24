@@ -15,6 +15,9 @@ const Role = sequelize.define('Role', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+}, {
+    tableName: 'roles',
+    timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
 });
 
 module.exports = Role;

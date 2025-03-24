@@ -10,6 +10,10 @@ const sequelize = new Sequelize(
         port: process.env.DB_PORT,  // Puerto de PostgreSQL (por defecto 5432)
         dialect: 'postgres',        // Especificamos que usamos PostgreSQL
         logging: false,             // Desactivamos los logs de Sequelize en consola
+        dialectOptions: {
+            useUTC: false,
+        },
+        timezone: 'America/Santiago',
     }
 );
 

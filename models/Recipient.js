@@ -28,6 +28,9 @@ const Recipient = sequelize.define('Recipient', {
     notes: {
         type: DataTypes.TEXT,
     },
+}, {
+    tableName: 'recipients',
+    timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
 });
 
 module.exports = Recipient;

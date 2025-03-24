@@ -25,6 +25,9 @@ const Gift = sequelize.define('Gift', {
     delivery_date: {
         type: DataTypes.DATE,
     },
+}, {
+    tableName: 'gifts',
+    timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
 });
 
 module.exports = Gift;

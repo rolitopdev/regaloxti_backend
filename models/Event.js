@@ -18,6 +18,9 @@ const Event = sequelize.define('Event', {
     notes: {
         type: DataTypes.TEXT,
     },
+}, {
+    tableName: 'events',
+    timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
 });
 
 module.exports = Event;

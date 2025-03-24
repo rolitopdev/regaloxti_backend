@@ -15,6 +15,9 @@ const GiftOrder = sequelize.define('GiftOrder', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+}, {
+    tableName: 'gift_orders',
+    timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
 });
 
 module.exports = GiftOrder;
