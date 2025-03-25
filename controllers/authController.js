@@ -1,6 +1,8 @@
+const crypto = require('crypto');
 const { User } = require('../models');
 const { generateToken, hashPassword, comparePassword } = require('../utils/auth');
 const createResponse = require('../utils/response');
+const { sendPasswordResetEmail } = require('../utils/emailService');
 
 // Registrar un nuevo usuario
 const register = async (req, res) => {
@@ -32,7 +34,7 @@ const register = async (req, res) => {
 
         // Retornar la respuesta estándar
         res.status(201).json(createResponse(true, 'Usuario registrado exitosamente', {
-            user_id: newUser.user_id,
+            ...newUser.dataValues,
             email: newUser.email,
             token,
         }));
@@ -71,7 +73,62 @@ const login = async (req, res) => {
     }
 };
 
+// Solicitar restablecimiento de contraseña
+const requestPasswordReset = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const emailProvided = email ? email.toString().trim().toLowerCase() : null;
+        const user = await User.findOne({ where: { email: emailProvided } });
+        if (!user) {
+            return res.status(404).json(createResponse(false, 'Usuario no encontrado'));
+        }
+
+        // Generar token temporal (expira en 1 hora)
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        const resetTokenExpires = Date.now() + 3600000; // 1 hora
+
+        await user.update({ resetToken, resetTokenExpires });
+        await sendPasswordResetEmail(email, resetToken);
+
+        res.json(createResponse(true, 'Correo de restablecimiento enviado'));
+    } catch (err) {
+        res.status(500).json(createResponse(false, err.message));
+    }
+};
+
+// Restablecer contraseña
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        const user = await User.findOne({
+            where: {
+                resetToken: token,
+                resetTokenExpires: { [Op.gt]: Date.now() }, // Token no expirado
+            },
+        });
+
+        if (!user) {
+            return res.status(400).json(createResponse(false, 'Token inválido o expirado'));
+        }
+
+        const hashedPassword = await hashPassword(newPassword);
+        await user.update({
+            password: hashedPassword,
+            resetToken: null,
+            resetTokenExpires: null,
+        });
+
+        res.json(createResponse(true, 'Contraseña actualizada exitosamente'));
+    } catch (err) {
+        res.status(500).json(createResponse(false, err.message));
+    }
+};
+
 module.exports = {
     register,
     login,
+    requestPasswordReset,
+    resetPassword
 };

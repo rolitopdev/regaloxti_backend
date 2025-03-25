@@ -41,6 +41,14 @@ const User = sequelize.define('User', {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
+    resetToken: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    resetTokenExpires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
 }, {
     tableName: 'users', // 👈 Aquí defines el nombre real de la tabla
     timestamps: false,  // 👈 Opcional, evita que Sequelize agregue createdAt y updatedAt
