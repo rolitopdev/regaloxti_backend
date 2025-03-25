@@ -1,8 +1,10 @@
 const crypto = require('crypto');
+const { Op } = require('sequelize');
 const { User } = require('../models');
 const { generateToken, hashPassword, comparePassword } = require('../utils/auth');
 const createResponse = require('../utils/response');
 const { sendPasswordResetEmail } = require('../utils/emailService');
+const { nowInChile, addOneHour } = require('../utils/time');
 
 // Registrar un nuevo usuario
 const register = async (req, res) => {
@@ -86,7 +88,7 @@ const requestPasswordReset = async (req, res) => {
 
         // Generar token temporal (expira en 1 hora)
         const resetToken = crypto.randomBytes(20).toString('hex');
-        const resetTokenExpires = Date.now() + 3600000; // 1 hora
+        const resetTokenExpires = addOneHour(1, 'hour');
 
         await user.update({ resetToken, resetTokenExpires });
         await sendPasswordResetEmail(email, resetToken);
@@ -97,21 +99,40 @@ const requestPasswordReset = async (req, res) => {
     }
 };
 
-// Restablecer contraseña
-const resetPassword = async (req, res) => {
-    const { token, newPassword } = req.body;
-
+// Verificar token antes de restablecer la contraseña
+const verifyToken = async (req, res) => {
+    const { token } = req.params;
     try {
+
         const user = await User.findOne({
             where: {
                 resetToken: token,
-                resetTokenExpires: { [Op.gt]: Date.now() }, // Token no expirado
+                resetTokenExpires: { [Op.gt]: nowInChile() }, // Token no expirado
             },
         });
 
         if (!user) {
             return res.status(400).json(createResponse(false, 'Token inválido o expirado'));
         }
+
+        res.json(createResponse(true, 'Token válido'));
+    } catch (err) {
+        res.status(500).json(createResponse(false, err.message));
+    }
+
+};
+
+// Restablecer contraseña
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+
+        const user = await User.findOne({
+            where: {
+                resetToken: token
+            },
+        });
 
         const hashedPassword = await hashPassword(newPassword);
         await user.update({
@@ -130,5 +151,6 @@ module.exports = {
     register,
     login,
     requestPasswordReset,
+    verifyToken,
     resetPassword
 };

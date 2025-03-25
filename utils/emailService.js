@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const transporter = nodemailer.createTransport({
-    service: 'Gmail', // Ejemplo con Gmail
+    service: 'Gmail',
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendPasswordResetEmail = async (email, resetToken) => {
-    const resetUrl = `http://tudominio.com/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.URL_FRONT}/reset-password/${resetToken}`;
 
     await transporter.sendMail({
         from: '"RegaloXTi"',

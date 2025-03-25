@@ -3,7 +3,6 @@ const cors = require('cors');
 const app = express();
 
 const authMiddleware = require('./middlewares/authMiddleware');
-
 const authRoutes = require('./routes/authRoutes'); // Importar rutas de autenticación
 
 // Middlewares

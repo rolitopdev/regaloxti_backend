@@ -7,6 +7,7 @@ const PUBLIC_ROUTES = [
     '/api/auth/register',
     '/api/auth/request-password-reset',
     '/api/auth/reset-password',
+    '/api/auth/verify-token',
 ];
 
 const authMiddleware = (req, res, next) => {
@@ -28,7 +29,7 @@ const authMiddleware = (req, res, next) => {
         return res.status(403).json(createResponse(false, 'Token inválido o expirado'));
     }
 
-    req.user = decoded; // Adjuntar datos del usuario
+    req.user = decoded;
     next();
 };
 
