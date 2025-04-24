@@ -24,10 +24,12 @@ const authMiddleware = (req, res, next) => {
 
     // Verificar token
     const decoded = verifyToken(token);
-    console.log('decoded', decoded)
+    
     if (!decoded) {
         return res.status(403).json(createResponse(false, 'Token inválido o expirado'));
     }
+
+    decoded.exp = decoded.exp * 1000; // Convertir a milisegundos para la comparación
 
     req.user = decoded;
     next();

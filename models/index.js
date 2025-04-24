@@ -9,13 +9,30 @@ const Event = require('./Event');
 const Gift = require('./Gift');
 const GiftOrder = require('./GiftOrder');
 const Recipient = require('./Recipient');
+const Product = require('./Product');
+const GiftProduct = require('./GiftProduct');
 
 // Establecer relaciones
 User.belongsTo(Role, { foreignKey: 'role_id' });
 User.belongsTo(Subscription, { foreignKey: 'subscription_id' });
+
 Event.belongsTo(User, { foreignKey: 'user_id' });
+
 Gift.belongsTo(Event, { foreignKey: 'event_id' });
+Gift.belongsToMany(Product, {
+    through: GiftProduct,
+    foreignKey: 'gift_id',
+    otherKey: 'product_id'
+});
+
+Product.belongsToMany(Gift, {
+    through: GiftProduct,
+    foreignKey: 'product_id',
+    otherKey: 'gift_id'
+});
+
 GiftOrder.belongsTo(Gift, { foreignKey: 'gift_id' });
+
 Recipient.belongsTo(Event, { foreignKey: 'event_id' });
 
 // Sincronizar modelos con la base de datos
@@ -31,4 +48,6 @@ module.exports = {
     Gift,
     GiftOrder,
     Recipient,
+    Product,
+    GiftProduct
 };
