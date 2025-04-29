@@ -4,7 +4,7 @@ const { User } = require('../models');
 const { generateToken, hashPassword, comparePassword } = require('../utils/auth');
 const createResponse = require('../utils/response');
 const { sendPasswordResetEmail } = require('../utils/emailService');
-const { nowInChile, addOneHour } = require('../utils/time');
+const { now, addOneHour } = require('../utils/time');
 
 // Registrar un nuevo usuario
 const register = async (req, res) => {
@@ -107,7 +107,7 @@ const verifyToken = async (req, res) => {
         const user = await User.findOne({
             where: {
                 resetToken: token,
-                resetTokenExpires: { [Op.gt]: nowInChile() }, // Token no expirado
+                resetTokenExpires: { [Op.gt]: now() }, // Token no expirado
             },
         });
 
