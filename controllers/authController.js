@@ -59,6 +59,7 @@ const login = async (req, res) => {
             }
         });
 
+        console.log('user', user);
         if (!user) {
             return res.status(404).json(createResponse(false, 'Usuario no encontrado'));
         }
