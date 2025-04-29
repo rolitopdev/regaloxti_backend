@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const { Op } = require('sequelize');
-const { User } = require('../models');
+const { User, Role } = require('../models');
 const { generateToken, hashPassword, comparePassword } = require('../utils/auth');
 const createResponse = require('../utils/response');
 const { sendPasswordResetEmail } = require('../utils/emailService');
@@ -24,11 +24,12 @@ const register = async (req, res) => {
         const newUser = await User.create({
             name,
             last_name,
-            identification_type,
+            identification_type: 'CC',
             identification,
             email,
             phone_number,
             password: hashedPassword,
+            role_id: 2, // Rol por defecto (2 = cliente)
         });
 
         // Generar un token JWT
@@ -51,7 +52,13 @@ const login = async (req, res) => {
 
     try {
         // Buscar al usuario por su email
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findOne({
+            where: { email },
+            include: {
+                model: Role
+            }
+        });
+
         if (!user) {
             return res.status(404).json(createResponse(false, 'Usuario no encontrado'));
         }

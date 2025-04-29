@@ -53,7 +53,6 @@ const suggestion = async (req, res) => {
     const content = response.data?.choices?.[0]?.message?.content ?? "{}";
     const parsed = JSON.parse(content);
     const aiItems = parsed.data || [];
-    console.log('aiItems', aiItems)
 
     // 3. Obtener los productos completos desde la BD según los nombres devueltos
     const names = aiItems.map((item) => item.name);

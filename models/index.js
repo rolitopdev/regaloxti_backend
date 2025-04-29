@@ -9,8 +9,9 @@ const OrderProduct = require('./OrderProduct');
 
 // Establecer relaciones
 User.belongsTo(Role, { foreignKey: 'role_id' });
+Order.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(Order, { foreignKey: 'user_id' });
 
-// Relaciones manuales
 Order.belongsToMany(Product, {
     through: OrderProduct,
     foreignKey: 'order_id',
@@ -33,5 +34,5 @@ module.exports = {
     User,
     Product,
     Order,
-    Product,
+    OrderProduct,
 };
